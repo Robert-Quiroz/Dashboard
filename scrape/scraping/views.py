@@ -1,15 +1,98 @@
-import json
+# origen1 = "WA"
+# dest1 = "TX;UT;VT;VA;WA;WV;WI;WY"
+# ori2 = "KS"
+# dest2 = "MN;MS;MI;MT"import json
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
-from .models import doftDB, routingDB
+from django.db.models import Q
+from .models import doftDB, routingDB, usersDB
 import requests
 
 
-def pruebaapi(request):
+def index(request):
+    return HttpResponse("Aqui quedara el dashbard de FE-Routing")
+
+def createProject(request):
     RUN_TOKEN = "t15qmr337RKO"
     api_key= "tGyD2-ahDS4Q"
     r = requests.get('https://www.parsehub.com/api/v2/runs/'+RUN_TOKEN+'/data?api_key='+api_key)
-    #return HttpResponse(r.text)
+    return HttpResponse(r.text)
+
+
+def getAllProjects(request):
+    PROJECT_TOKEN = "tEWFZhVQXvnG"
+    params = {
+    "api_key": "tGyD2-ahDS4Q",
+    "offset": "0",
+    "include_options": "1"
+    }
+    r = requests.get('https://www.parsehub.com/api/v2/projects/{PROJECT_TOKEN}', params=params)
+    print(r.text)
+    return HttpResponse(r.text)
+
+
+def runProject(request):
+    params = {
+        "api_key": "tGyD2-ahDS4Q",
+        "start_url": "http://www.example.com",
+        "start_template": "main_template",
+        "start_value_override": "{\"query\": \"San Francisco\"}",
+        "send_email": "1"
+        }
+    r = requests.post("https://www.parsehub.com/api/v2/projects/{PROJECT_TOKEN}/run", data=params)
+
+    return HttpResponse(r.text)
+
+
+def ListAllProjects(request):
+    params = {
+        "api_key": "tGyD2-ahDS4Q",
+        "offset": "0",
+        "limit": "20",
+        "include_options": "1"
+    }   
+    r = requests.get('https://www.parsehub.com/api/v2/projects', params=params)
+    return HttpResponse(r.text)
+
+
+def getARun(request):
+    params = {
+        "api_key": "tGyD2-ahDS4Q"
+    }
+    r = requests.get('https://www.parsehub.com/api/v2/runs/{RUN_TOKEN}', params=params)
+    return HttpResponse(r.text)
+
+
+def getDataForRun(request):
+    params = {
+        "api_key": "tGyD2-ahDS4Q",
+        "format": "csv"
+    }
+    r = requests.get('https://www.parsehub.com/api/v2/runs/{RUN_TOKEN}/data', params=params)
+    return HttpResponse(r.text)
+
+
+def cancelRun(request):
+    params = {
+        "api_key": "tGyD2-ahDS4Q"
+    }
+    r = requests.post("https://www.parsehub.com/api/v2/runs/{RUN_TOKEN}/cancel", data=params)
+    return HttpResponse(r.text)
+
+
+def deleteRun(request):
+    params = {
+        "api_key": "tGyD2-ahDS4Q"
+    }
+    r = requests.delete('https://www.parsehub.com/api/v2/runs/{RUN_TOKEN}', params=params)
+    return HttpResponse(r.text)
+
+
+def GetLastReadyData(request):
+    RUN_TOKEN = "t15qmr337RKO"
+    api_key= "tGyD2-ahDS4Q"
+    r = requests.get('https://www.parsehub.com/api/v2/runs/'+RUN_TOKEN+'/data?api_key='+api_key)
     contador = 0
     try:
         predata = json.loads(r.text) #predata es un diccionario
@@ -27,14 +110,10 @@ def pruebaapi(request):
                         distances = predata[x][y]["Distance"],
                         truck_types = predata[x][y]["TruckType"]
                     )
-                    data.save() #guardo en la base de datos
+                    data.save()
         return HttpResponse('Se guardaron '+ str(contador) +' filas en la base de datos.')
     except:
         return HttpResponseBadRequest("Error en el envio de los datos")
-
-
-def index(request):
-    return HttpResponse("Aqui quedara el dashbard de FE-Routing")
 
 
 def prueba(request):
@@ -55,7 +134,7 @@ def prueba(request):
                             distances = predata[x][y]["Distance"],
                             truck_types = predata[x][y]["TruckType"]
                         )
-                        data.save() #guardo en la base de datos
+                        data.save()
             return HttpResponse(data)
         except:
             return HttpResponseBadRequest("Error en el envio de los datos")
@@ -77,12 +156,12 @@ def newsLoadsDoftDB(request):
                 distances = data["Distance"],
                 truck_types = data["TruckType"]
             )#creo un objeto de tipo doftDB a base del diccionario que tenia
-            cargas.save()#guardo en la base de datos
+            cargas.save()
             return HttpResponse("Se ha guardado en la base de datos")
         except:
             return HttpResponseBadRequest("Error en los datos enviados")
     else:
-        return HttpResponseNotAllowed(['POST'], "Metodo invalido")
+        return HttpResponseNotAllowed(['GET'], "Metodo invalido")
 
 
 def getLoadsDoftBD(request):
@@ -102,53 +181,66 @@ def getLoadsDoftBD(request):
                 "TruckType": x.truck_types
             } 
             allLoadsData.append(data) #añado a la lista
-        datajason = json.dumps(allLoadsData)
+        dataJson = json.dumps(allLoadsData)
         resp = HttpResponse()
         resp.headers['Content-Type'] = "text/json"
-        resp.content = datajason
+        resp.content = dataJson
         return resp
+    else:
+        return HttpResponseNotAllowed(['POST'], "Metodo invalido")
+
+
+def newsUsers(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body) #data es un diccionario
+            user = usersDB(
+                id = data["id"],
+                firstName = data["firstName"],
+                lastName = data["lastName"],
+                email = data["email"],
+                password = data["password"]
+            )#creo un objeto de tipo userDB a base del diccionario que tenia
+            user.save()
+            return HttpResponse("Nuevo usuario creado con exito!")
+        except:
+            return HttpResponseBadRequest("Error en los datos enviados")
     else:
         return HttpResponseNotAllowed(['GET'], "Metodo invalido")
 
-# PROJECT_TOKEN = "tEWFZhVQXvnG"
-# projectToken = "tEWFZhVQXvnG"
-# apiKey = "tGyD2-ahDS4Q"
-# origen1 = "WA"
-# dest1 = "TX;UT;VT;VA;WA;WV;WI;WY"
-# ori2 = "KS"
-# dest2 = "MN;MS;MI;MT"
-# def createProject(request):
-#     if fi:
-#         sfgsdfs
-#     else:
-#         sdfsdf
+def getOneUser(request, paramx):
+    if request.method == 'GET':
+        user = usersDB.objects.filter( id = id ).first()
+        data = {
+            "id": usersDB.id,
+            "firstName": usersDB.firstName,
+            "lastName": usersDB.lastName,
+            "email": usersDB.email
+        }
+        dataJson = json.dumps(data)
+        resp = HttpResponse()
+        resp.headers['Content-Type'] = "text/json"
+        resp.content = dataJson
+        return resp
+    else:
+        return HttpResponseNotAllowed(['POST'], "Metodo invalido")
 
-# def getAllProjects(request):
-#     if fi:
-#         sfgsdfs
-#     else:
-#         sdfsdf
-
-# def runProject(request):
-#     if fi:
-#         sfgsdfs
-#     else:
-#         sdfsdf
-
-# def getDataForRunProject(request):
-#     if fi:
-#         sfgsdfs
-#     else:
-#         sdfsdf
-
-# def cancelRun(request):
-#     if fi:
-#         sfgsdfs
-#     else:
-#         sdfsdf
-
-# def deleteRun(request):
-#     if fi:
-#         sfgsdfs
-#     else:
-#         sd
+def getUsersByNames(request, paramx):
+    if request.method == 'GET':
+        user = usersDB.objects.filter( Q( firstName = paramx ) | Q( lastName = paramx ) )
+        allUserData = []
+        for x in user:
+            data = {
+                "id": x.id,
+                "firstName": x.firstName,
+                "lastName": x.lastName,
+                "email": x.email
+                }
+            allUserData.append(data)
+        dataJson = json.dumps(allUserData)
+        resp = HttpResponse()
+        resp.headers['Content-Type'] = "text/json"
+        resp.content = dataJson
+        return resp
+    else:
+        return HttpResponseNotAllowed(['POST'], "Metodo invalido")

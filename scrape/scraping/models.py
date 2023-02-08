@@ -14,3 +14,12 @@ class doftDB(models.Model):
 
 class routingDB(models.Model):
     id = models.AutoField(primary_key=True)
+
+class usersDB(models.Model):
+    id = models.BigIntegerField(primary_key = True)
+    firstName = models.CharField(max_length=50)
+    lastName = models.CharField(max_length=50)
+    email = models.EmailField(max_length=50)
+    password = models.CharField(max_length=50)
+    isAdmin = models.BooleanField(default = False)
+    
