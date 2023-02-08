@@ -211,6 +211,8 @@ def newsUsers(request):
 def getOneUser(request, paramx):
     if request.method == 'GET':
         user = usersDB.objects.filter( id = id ).first()
+        if (not user):
+            return HttpResponseBadRequest("No existe usuario con esa cedula")
         data = {
             "id": usersDB.id,
             "firstName": usersDB.firstName,
@@ -228,6 +230,8 @@ def getOneUser(request, paramx):
 def getUsersByNames(request, paramx):
     if request.method == 'GET':
         user = usersDB.objects.filter( Q( firstName = paramx ) | Q( lastName = paramx ) )
+        if (not user):
+            return HttpResponseBadRequest("No existen usuarios con esos filtros")
         allUserData = []
         for x in user:
             data = {
