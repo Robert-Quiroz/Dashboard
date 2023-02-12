@@ -8,10 +8,12 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAll
 from django.db.models import Q
 from .models import doftDB, routingDB, usersDB
 import requests
+from django.template import loader
 
 
 def index(request):
-    return HttpResponse("Aqui quedara el dashbard de FE-Routing")
+    template = loader.get_template('index.html')
+    return HttpResponse(template.render())
 
 def getAProject(request):
     PROJECT_TOKEN = "tEWFZhVQXvnG"
