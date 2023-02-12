@@ -3,6 +3,12 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name = 'Home'), #'ruta del nevegador',views.funcion,'comentario para mi yo futuro'
+    path('index.html', views.index, name = 'index.html'),
+    path('charts.html', views.charts, name = 'charts.html'),
+    path('tables.html', views.tables, name = 'tables.html'),
+    path('login.html', views.login, name = 'login.html'),
+    path('register.html', views.register, name = 'register.html'),
+    path('forgot-password.html', views.forgotPassword, name = 'forgot-password.html'),
     path('get', views.getLoadsDoftBD, name = 'get_loads'), #ok
     path('post', views.newsLoadsDoftDB, name = 'post_loads'),#ok
     path('prueba', views.prueba, name = 'prueba_loads'),#ok

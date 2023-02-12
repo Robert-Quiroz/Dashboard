@@ -15,6 +15,27 @@ def index(request):
     template = loader.get_template('index.html')
     return HttpResponse(template.render())
 
+def charts(request):
+    template = loader.get_template('charts.html')
+    return HttpResponse(template.render())
+
+def tables(request):
+    template = loader.get_template('tables.html')
+    return HttpResponse(template.render())
+
+def login(request):
+    template = loader.get_template('login.html')
+    return HttpResponse(template.render())
+
+def register(request):
+    template = loader.get_template('register.html')
+    return HttpResponse(template.render())
+
+def forgotPassword(request):
+    template = loader.get_template('forgot-password.html')
+    return HttpResponse(template.render())
+
+
 def getAProject(request):
     PROJECT_TOKEN = "tEWFZhVQXvnG"
     params = {
