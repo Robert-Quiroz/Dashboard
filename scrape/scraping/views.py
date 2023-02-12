@@ -2,7 +2,7 @@
 # dest1 = "TX;UT;VT;VA;WA;WV;WI;WY"
 # ori2 = "KS"
 # dest2 = "MN;MS;MI;MT"import json
-
+import json
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.db.models import Q
@@ -13,34 +13,28 @@ import requests
 def index(request):
     return HttpResponse("Aqui quedara el dashbard de FE-Routing")
 
-def createProject(request):
-    RUN_TOKEN = "t15qmr337RKO"
-    api_key= "tGyD2-ahDS4Q"
-    r = requests.get('https://www.parsehub.com/api/v2/runs/'+RUN_TOKEN+'/data?api_key='+api_key)
-    return HttpResponse(r.text)
-
-
-def getAllProjects(request):
+def getAProject(request):
     PROJECT_TOKEN = "tEWFZhVQXvnG"
     params = {
     "api_key": "tGyD2-ahDS4Q",
     "offset": "0",
     "include_options": "1"
     }
-    r = requests.get('https://www.parsehub.com/api/v2/projects/{PROJECT_TOKEN}', params=params)
-    print(r.text)
+    r = requests.get('https://www.parsehub.com/api/v2/projects/'+PROJECT_TOKEN, params=params)
+    #print(r.text)
     return HttpResponse(r.text)
 
 
 def runProject(request):
+    PROJECT_TOKEN = "tEWFZhVQXvnG"
     params = {
         "api_key": "tGyD2-ahDS4Q",
-        "start_url": "http://www.example.com",
+        "start_url": "https://loadboard.doft.com/login",
         "start_template": "main_template",
-        "start_value_override": "{\"query\": \"San Francisco\"}",
-        "send_email": "1"
+        #"start_value_override": "{\"query\": \"San Francisco\"}",
+        #"send_email": "1"
         }
-    r = requests.post("https://www.parsehub.com/api/v2/projects/{PROJECT_TOKEN}/run", data=params)
+    r = requests.post("https://www.parsehub.com/api/v2/projects/"+PROJECT_TOKEN+"/run", data=params)
 
     return HttpResponse(r.text)
 
@@ -57,35 +51,39 @@ def ListAllProjects(request):
 
 
 def getARun(request):
+    RUN_TOKEN = "t15qmr337RKO"
     params = {
         "api_key": "tGyD2-ahDS4Q"
     }
-    r = requests.get('https://www.parsehub.com/api/v2/runs/{RUN_TOKEN}', params=params)
+    r = requests.get('https://www.parsehub.com/api/v2/runs/'+RUN_TOKEN, params=params)
     return HttpResponse(r.text)
 
 
 def getDataForRun(request):
+    RUN_TOKEN = "t15qmr337RKO"
     params = {
         "api_key": "tGyD2-ahDS4Q",
-        "format": "csv"
+        "format": "json"
     }
-    r = requests.get('https://www.parsehub.com/api/v2/runs/{RUN_TOKEN}/data', params=params)
+    r = requests.get('https://www.parsehub.com/api/v2/runs/'+RUN_TOKEN+'/data', params=params)
     return HttpResponse(r.text)
 
 
 def cancelRun(request):
+    RUN_TOKEN = "t15qmr337RKO"
     params = {
         "api_key": "tGyD2-ahDS4Q"
     }
-    r = requests.post("https://www.parsehub.com/api/v2/runs/{RUN_TOKEN}/cancel", data=params)
+    r = requests.post("https://www.parsehub.com/api/v2/runs/"+RUN_TOKEN+"/cancel", data=params)
     return HttpResponse(r.text)
 
 
 def deleteRun(request):
+    RUN_TOKEN = "t15qmr337RKO"
     params = {
         "api_key": "tGyD2-ahDS4Q"
     }
-    r = requests.delete('https://www.parsehub.com/api/v2/runs/{RUN_TOKEN}', params=params)
+    r = requests.delete('https://www.parsehub.com/api/v2/runs/'+RUN_TOKEN, params=params)
     return HttpResponse(r.text)
 
 
@@ -117,7 +115,7 @@ def GetLastReadyData(request):
 
 
 def prueba(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         try:
             predata = json.loads(request.body) #predata es un diccionario
             for x in predata:
@@ -154,14 +152,14 @@ def newsLoadsDoftDB(request):
                 states_dest = data["StateDest"],
                 weights = data["Weight"],
                 distances = data["Distance"],
-                truck_types = data["TruckType"]
+                truck_types = data["TruckType"],
             )#creo un objeto de tipo doftDB a base del diccionario que tenia
             cargas.save()
-            return HttpResponse("Se ha guardado en la base de datos")
+            return HttpResponse("Se ha guardado las cargas en la base de datos")
         except:
             return HttpResponseBadRequest("Error en los datos enviados")
     else:
-        return HttpResponseNotAllowed(['GET'], "Metodo invalido")
+        return HttpResponseNotAllowed(['POST'], "Metodo invalido")
 
 
 def getLoadsDoftBD(request):
@@ -181,13 +179,13 @@ def getLoadsDoftBD(request):
                 "TruckType": x.truck_types
             } 
             allLoadsData.append(data) #añado a la lista
-        dataJson = json.dumps(allLoadsData)
+        data_json = json.dumps(allLoadsData)
         resp = HttpResponse()
         resp.headers['Content-Type'] = "text/json"
-        resp.content = dataJson
+        resp.content = data_json
         return resp
     else:
-        return HttpResponseNotAllowed(['POST'], "Metodo invalido")
+        return HttpResponseNotAllowed(['GET'], "Metodo invalido")
 
 
 def newsUsers(request):
@@ -206,9 +204,9 @@ def newsUsers(request):
         except:
             return HttpResponseBadRequest("Error en los datos enviados")
     else:
-        return HttpResponseNotAllowed(['GET'], "Metodo invalido")
+        return HttpResponseNotAllowed(['POST'], "Metodo invalido")
 
-def getOneUser(request, paramx):
+def getOneUser(request, id):
     if request.method == 'GET':
         user = usersDB.objects.filter( id = id ).first()
         if (not user):
@@ -225,7 +223,7 @@ def getOneUser(request, paramx):
         resp.content = dataJson
         return resp
     else:
-        return HttpResponseNotAllowed(['POST'], "Metodo invalido")
+        return HttpResponseNotAllowed(['GET'], "Metodo invalido")
 
 def getUsersByNames(request, paramx):
     if request.method == 'GET':
@@ -247,4 +245,39 @@ def getUsersByNames(request, paramx):
         resp.content = dataJson
         return resp
     else:
-        return HttpResponseNotAllowed(['POST'], "Metodo invalido")
+        return HttpResponseNotAllowed(['GET'], "Metodo invalido")
+
+
+def updateUsers(request, id):
+    if request.method == 'PUT':
+        try:
+            user = usersDB.objects.filter( id = id ).first()
+            if (not user):
+                return HttpResponseBadRequest("No existe usuario con esa cedula")
+            
+            data = json.loads(request.body) #data es un diccionario
+            user.firstName = data["firstName"],
+            user.lastName = data["lastName"],
+            user.email = data["email"],
+            user.password = data["password"]
+            user.save()
+            return HttpResponse("Usuario ACTUALIZADO con exito!")
+        except:
+            return HttpResponseBadRequest("Error en los datos enviados")
+    else:
+        return HttpResponseNotAllowed(['PUT'], "Metodo invalido")
+
+
+def deleteUsers(request, id):
+    if request.method == 'DELETE':
+        try:
+            user = usersDB.objects.filter( id = id ).first()
+            if (not user):
+                return HttpResponseBadRequest("No existe usuario con esa cedula")
+
+            user.delete()
+            return HttpResponse("Usuario ELIMINADO con exito!")
+        except:
+            return HttpResponseBadRequest("Error en los datos enviados")
+    else:
+        return HttpResponseNotAllowed(['DELETE'], "Metodo invalido")
