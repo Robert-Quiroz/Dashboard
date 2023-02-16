@@ -15,24 +15,43 @@ def index(request):
     template = loader.get_template('index.html')
     return HttpResponse(template.render())
 
+
 def charts(request):
+    all_Loads = doftDB.objects.all().values()
     template = loader.get_template('charts.html')
-    return HttpResponse(template.render())
+    context = {'all_Loads': all_Loads,}
+    return HttpResponse(template.render(context, request))
+
 
 def tables(request):
+    all_Loads = doftDB.objects.all().values()
     template = loader.get_template('tables.html')
-    return HttpResponse(template.render())
+    context = {'all_Loads': all_Loads,}
+    return HttpResponse(template.render(context, request))
+
 
 def login(request):
     template = loader.get_template('login.html')
     return HttpResponse(template.render())
 
+
 def register(request):
     template = loader.get_template('register.html')
     return HttpResponse(template.render())
 
+
 def forgotPassword(request):
     template = loader.get_template('forgot-password.html')
+    return HttpResponse(template.render())
+
+
+def proyects(request):
+    template = loader.get_template('buttons.html')
+    return HttpResponse(template.render())
+
+
+def data(request):
+    template = loader.get_template('cards.html')
     return HttpResponse(template.render())
 
 
@@ -135,32 +154,6 @@ def GetLastReadyData(request):
         return HttpResponse('Se guardaron '+ str(contador) +' filas en la base de datos.')
     except:
         return HttpResponseBadRequest("Error en el envio de los datos")
-
-
-def prueba(request):
-    if request.method == 'POST':
-        try:
-            predata = json.loads(request.body) #predata es un diccionario
-            for x in predata:
-                if x == "LoadInfo":
-                    for y in range(len(predata[x])):
-                        print(predata[x][y]["Pickup"])
-                        data = doftDB(
-                            pickups = predata[x][y]["Pickup"],
-                            origins = predata[x][y]["Orgin"],
-                            states_orign = predata[x][y]["StateOrig"],
-                            destinations = predata[x][y]["Destination"],
-                            states_dest = predata[x][y]["StateDest"],
-                            weights = predata[x][y]["Weight"],
-                            distances = predata[x][y]["Distance"],
-                            truck_types = predata[x][y]["TruckType"]
-                        )
-                        data.save()
-            return HttpResponse(data)
-        except:
-            return HttpResponseBadRequest("Error en el envio de los datos")
-    else:
-        return HttpResponseNotAllowed(['POST'], "Metodo invalido")
 
 
 def newsLoadsDoftDB(request):

@@ -122,7 +122,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, '/scrape/scraping/static'),)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'C:/Users/ingra/Documents/EF-Routing/ef_routing-backend/scrape/scraping/static'),)
 #'C:/Users/ingra/Documents/EF-Routing/ef_routing-backend/scrape/scraping/static'
 
 # STATICFILES_DIRS = [
