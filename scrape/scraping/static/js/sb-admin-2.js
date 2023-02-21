@@ -53,12 +53,4 @@
     e.preventDefault();
   });
 
-  const urlback = "http://127.0.0.1:8000/GetLastReadyData";
-  function conectar (){
-    fetch(urlback)
-  }
-    
-  document.registro.addEventListener("submit", conectar);
-
 })(jQuery); // End of use strict
-

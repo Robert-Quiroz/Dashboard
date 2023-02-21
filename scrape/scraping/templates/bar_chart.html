@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+          width: 630px; /* 50vw Ancho de la mitad de la pantalla */
+          height: 335px; /* 50vh Altura de la mitad de la pantalla */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="myChart_2"></canvas>
+    </div>
+    <script>
+        var states_orign_list = {{ states_orign_list|safe }};
+        var states_orign_counts_list = {{ states_orign_counts_list|safe }};
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: states_orign_list,
+                datasets: [{
+                    label: 'Frecuencia',
+                    data: states_orign_counts_list,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+
+
+    <script>
+        var origins_list = {{ origins_list|safe }};
+        var origins_counts_list = {{ origins_counts_list|safe }};
+        var ctx = document.getElementById('myChart_2').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: origins_list,
+                datasets: [{
+                    label: 'Frecuencia',
+                    data: origins_counts_list,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+</body>
+
+    
+</html>
+
+<!--
+<td>{{x.pickups}}</td>
+<td>{{x.origins}}</td>
+<td>{{x.states_orign}}</td>
+<td>{{x.destinations}}</td>
+<td>{{x.states_dest}}</td>
+<td>{{x.weights}}</td>
+<td>{{x.distances}}</td>
+<td>{{x.truck_types}}</td>
+-->

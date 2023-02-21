@@ -26,5 +26,6 @@ urlpatterns = [
     path('getOneUser', views.getOneUser, name = 'consultar usuario por cedula'),
     path('getUsersByNames', views.getUsersByNames, name = 'consultar usurio por nombres'),
     path('updateUsers', views.updateUsers, name = 'actualizar un usuario'),
-    path('deleteUsers', views.deleteUsers, name = 'eliminar un usuario')     
+    path('deleteUsers', views.deleteUsers, name = 'eliminar un usuario'),
+    path('bar-chart', views.my_view, name='load data en bar-chart'),
 ]

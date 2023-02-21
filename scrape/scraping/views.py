@@ -4,11 +4,39 @@
 # dest2 = "MN;MS;MI;MT"import json
 import json
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, JsonResponse
 from django.db.models import Q
 from .models import doftDB, routingDB, usersDB
 import requests
 from django.template import loader
+from collections import Counter
+
+def my_view(request):
+    states_orign_data = doftDB.objects.values_list('states_orign', flat=True)
+    states_orign_counts = dict(Counter(states_orign_data))
+    states_orign_list = list(states_orign_counts.keys())
+    states_orign_counts_list = list(states_orign_counts.values())
+
+    origins_data = doftDB.objects.values_list('origins', flat=True)
+    origins_counts = dict(Counter(origins_data))
+    origins_list = list(origins_counts.keys())
+    origins_counts_list = list(origins_counts.values())
+
+    return render(request, 'bar_chart.html', {'states_orign_list': states_orign_list, 'states_orign_counts_list': states_orign_counts_list,'origins_list': origins_list, 'origins_counts_list': origins_counts_list})
+
+
+def load_data(request):
+    la_data = doftDB.objects.all().values()
+    template = loader.get_template('bar_chart.html')
+    context = {'la_data': la_data,}
+    return HttpResponse(template.render(context, request))
+
+
+def tables(request):
+    all_Loads = doftDB.objects.all().values()
+    template = loader.get_template('tables.html')
+    context = {'all_Loads': all_Loads,}
+    return HttpResponse(template.render(context, request))
 
 
 def index(request):
@@ -17,9 +45,9 @@ def index(request):
 
 
 def charts(request):
-    all_Loads = doftDB.objects.all().values()
+    all_Loads2 = doftDB.objects.all().values()
     template = loader.get_template('charts.html')
-    context = {'all_Loads': all_Loads,}
+    context = {'all_Loads2': all_Loads2,}
     return HttpResponse(template.render(context, request))
 
 
