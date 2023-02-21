@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .chart-container {
       width: 50vw; /* Ancho de la mitad de la pantalla */
@@ -9,34 +10,44 @@
   </style>
 </head>
 <body>
-  <div class="chart-container">
-    <canvas id="myChart"></canvas>
+
+  <div>
+    <canvas id="originDestinationChart"></canvas>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <script>
-    const ctx = document.getElementById('myChart');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['California', 'San Francisco', 'New York', 'Georgia', 'Atlanta', 'Texas'],
-        datasets: [{
-          label: 'Amount of Loads',
-          backgroundColor: "#4e73df",
-          hoverBackgroundColor: "#2e59d9",
-          borderColor: "#4e73df",
-          data: [12, 19, 3, 5, 2, 3],
-        }]
-      },
-      options:  {
+    var ctx = document.getElementById('originDestinationChart').getContext('2d');
+    var chart_theData = {{ the_data|safe }};
+    var chartLabels = {{ the_labels|safe }};
+    var chart_data = {
+        "labels": chartLabels,
+        "datasets": [
+            {
+                "label": "Frequency",
+                "data": chart_theData,
+                "backgroundColor": "#5e72e4",
+                "borderColor": "#5e72e4",
+                "borderWidth": 1
+            }
+        ]
+    }
+    var chartOptions = {
         scales: {
-          y: {
-            beginAtZero: true
-          }
+            xAxes: [{
+                ticks: {
+                    beginAtZero:true,
+                    stepSize: 1
+                }
+            }]
         }
-      }
+    };
+    var myChart = new Chart(ctx, {
+        type: 'horizontalBar',
+        data: chartData,
+        options: chartOptions
     });
   </script>
+
+  
 </body>
 </html>

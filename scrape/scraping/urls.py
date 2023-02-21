@@ -28,4 +28,5 @@ urlpatterns = [
     path('updateUsers', views.updateUsers, name = 'actualizar un usuario'),
     path('deleteUsers', views.deleteUsers, name = 'eliminar un usuario'),
     path('bar-chart', views.my_view, name='load data en bar-chart'),
+    path('od_chart', views.origin_destination_chart, name='load data en bar-chart'),#views.my_view
 ]

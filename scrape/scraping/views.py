@@ -11,7 +11,34 @@ import requests
 from django.template import loader
 from collections import Counter
 
+def origin_destination_chart(request):
+    origins = doftDB.objects.order_by().values_list('origins', flat=True).distinct()
+    destinations = doftDB.objects.order_by().values_list('destinations', flat=True).distinct()
+    
+    frequency = {}
+    
+    for origin in origins:
+        for destination in destinations:
+            count = doftDB.objects.filter(origins=origin, destinations=destination).count()
+            if count > 0:
+                frequency[(origin, destination)] = count
+    
+    the_labels = []
+    the_data = []
+    
+    for origin, destination in sorted(frequency, key=frequency.get, reverse=True):
+        the_labels.append(f"{origin} - {destination}")
+        the_data.append(frequency[(origin, destination)])
+    
+    return render(request, "chartss.html", {'the_labels': the_labels, 'the_data': the_data})
+
+
 def my_view(request):
+    pickups_data = doftDB.objects.all().values_list('pickups', flat=True)
+    pickups_counts = dict(Counter(pickups_data))
+    pickups_list = list(pickups_counts.keys())
+    pickups_counts_list = list(pickups_counts.values())
+
     states_orign_data = doftDB.objects.values_list('states_orign', flat=True)
     states_orign_counts = dict(Counter(states_orign_data))
     states_orign_list = list(states_orign_counts.keys())
@@ -22,8 +49,43 @@ def my_view(request):
     origins_list = list(origins_counts.keys())
     origins_counts_list = list(origins_counts.values())
 
-    return render(request, 'bar_chart.html', {'states_orign_list': states_orign_list, 'states_orign_counts_list': states_orign_counts_list,'origins_list': origins_list, 'origins_counts_list': origins_counts_list})
+    states_dest_data = doftDB.objects.values_list('states_dest', flat=True)
+    states_dest_counts = dict(Counter(states_dest_data))
+    states_dest_list = list(states_dest_counts.keys())
+    states_dest_counts_list = list(states_dest_counts.values())
 
+    destinations_data = doftDB.objects.values_list('destinations', flat=True)
+    destinations_counts = dict(Counter(destinations_data))
+    destinations_list = list(destinations_counts.keys())
+    destinations_counts_list = list(destinations_counts.values())
+
+    distances = doftDB.objects.values_list('distances', flat=True)
+    distances_data = []
+    distances_counts = dict(Counter(distances))
+    for key, value in distances_counts.items():
+        distance_num = float(key.split()[0])
+        distances_data.append({'label': key, 'value': value, 'distance_num': distance_num})
+    
+    truck_types_data = doftDB.objects.values_list('truck_types', flat=True)
+    truck_types_counts = dict(Counter(truck_types_data))
+    truck_types_list = list(truck_types_counts.keys())
+    truck_types_counts_list = list(truck_types_counts.values())
+    
+    weights_list = doftDB.objects.values_list('weights', flat=True)
+    weights_dict = {}
+    for weight in weights_list:
+        try:
+            weight_num = float(weight.split()[0].rstrip('k'))
+        except ValueError:  # handle non-numeric values
+            weight_num = 0
+        if weight_num not in weights_dict:
+            weights_dict[weight_num] = 1
+        else:
+            weights_dict[weight_num] += 1
+    weights_labels = list(weights_dict.keys())
+    weights_data = list(weights_dict.values())
+
+    return render(request, 'bar_chart.html', {'pickups_list': pickups_list, 'pickups_counts_list': pickups_counts_list, 'states_orign_list': states_orign_list, 'states_orign_counts_list': states_orign_counts_list,'origins_list': origins_list, 'origins_counts_list': origins_counts_list,'states_dest_list': states_dest_list, 'states_dest_counts_list': states_dest_counts_list,'destinations_list': destinations_list, 'destinations_counts_list': destinations_counts_list, 'distances_data': distances_data,'truck_types_list': truck_types_list, 'truck_types_counts_list': truck_types_counts_list,'weights_labels': weights_labels, 'weights_data': weights_data,})
 
 def load_data(request):
     la_data = doftDB.objects.all().values()

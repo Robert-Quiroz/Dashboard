@@ -5,29 +5,88 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .chart-container {
-          width: 630px; /* 50vw Ancho de la mitad de la pantalla */
-          height: 335px; /* 50vh Altura de la mitad de la pantalla */
+          width: 600px; /* 50vw Ancho de la mitad de la pantalla */
+          height: 300px; /* 50vh Altura de la mitad de la pantalla */
         }
     </style>
 </head>
 
 <body>
+    
     <div class="chart-container">
-        <canvas id="myChart"></canvas>
+    <canvas id="originDestinationChart"></canvas>
     </div>
+
     <div class="chart-container">
-        <canvas id="myChart_2"></canvas>
+        <canvas id="pickups_chart"></canvas>
     </div>
+
+    <div class="chart-container">
+        <canvas id="origins_chart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="states_orign_chart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="destinations_chart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="states_dest_chart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="weights_chart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="distances_chart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="truck_types_chart"></canvas>
+    </div>
+
+    <script>
+        var pickups_list = {{ pickups_list|safe }};
+        var pickups_counts_list = {{ pickups_counts_list|safe }};
+        var ctx = document.getElementById('pickups_chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: pickups_list,
+                datasets: [{
+                    label: 'Frecuencia de pickups',
+                    data: pickups_counts_list,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+
     <script>
         var states_orign_list = {{ states_orign_list|safe }};
         var states_orign_counts_list = {{ states_orign_counts_list|safe }};
-        var ctx = document.getElementById('myChart').getContext('2d');
+        var ctx = document.getElementById('states_orign_chart').getContext('2d');
         var chart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: states_orign_list,
                 datasets: [{
-                    label: 'Frecuencia',
+                    label: 'Frecuencia de states_orign',
                     data: states_orign_counts_list,
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
@@ -46,17 +105,16 @@
         });
     </script>
 
-
     <script>
         var origins_list = {{ origins_list|safe }};
         var origins_counts_list = {{ origins_counts_list|safe }};
-        var ctx = document.getElementById('myChart_2').getContext('2d');
+        var ctx = document.getElementById('origins_chart').getContext('2d');
         var chart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: origins_list,
                 datasets: [{
-                    label: 'Frecuencia',
+                    label: 'Frecuencia de origins',
                     data: origins_counts_list,
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
@@ -74,6 +132,150 @@
             }
         });
     </script>
+
+    <script>
+        var states_dest_list = {{ states_dest_list|safe }};
+        var states_dest_counts_list = {{ states_dest_counts_list|safe }};
+        var ctx = document.getElementById('states_dest_chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: states_dest_list,
+                datasets: [{
+                    label: 'Frecuencia de states_dest',
+                    data: states_dest_counts_list,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+
+    <script>
+        var destinations_list = {{ destinations_list|safe }};
+        var destinations_counts_list = {{ destinations_counts_list|safe }};
+        var ctx = document.getElementById('destinations_chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: destinations_list,
+                datasets: [{
+                    label: 'Frecuencia de destinations',
+                    data: destinations_counts_list,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>    
+
+    <script>
+        var distances_data = {{ distances_data|safe }};
+        var labels = distances_data.map(item => item.distance_num);
+        var data = distances_data.map(item => item.value);
+        var ctx = document.getElementById('distances_chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Frecuencia de distances',
+                    data: data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+
+    <script>
+        var weights_labels = {{ weights_labels|safe }};
+        var weights_data = {{ weights_data|safe }};
+        var ctx = document.getElementById('weights_chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: weights_labels,
+                datasets: [{
+                    label: 'Frecuencia de weights',
+                    data: weights_data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script> 
+
+
+    <script>
+        var truck_types_list = {{ truck_types_list|safe }};
+        var truck_types_counts_list = {{ truck_types_counts_list|safe }};
+        var ctx = document.getElementById('truck_types_chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: truck_types_list,
+                datasets: [{
+                    label: 'Frecuencia de truck_types',
+                    data: truck_types_counts_list,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script> 
+
+
 </body>
 
     
