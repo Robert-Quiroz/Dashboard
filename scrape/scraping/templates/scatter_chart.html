@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+          width: 600px; /* 50vw Ancho de la mitad de la pantalla */
+          height: 300px; /* 50vh Altura de la mitad de la pantalla */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="disper"></canvas>
+    </div>
+    <script>
+        const data = {
+            datasets: [{
+                label: 'Scatter Dataset',
+                data: [{
+                    x: -10,
+                    y: 0
+                }, {
+                    x: 0,
+                    y: 10
+                }, {
+                    x: 10,
+                    y: 5
+                }, {
+                    x: 0.5,
+                    y: 5.5
+                }],
+                backgroundColor: 'rgb(255, 99, 132)'
+            }],
+        }
+        var ctx = document.getElementById('disper').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'scatter',
+            data: data,
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        var scatterData = JSON.parse('{{ scatter_data_json|escapejs }}');
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Origin vs Destination',
+                    data: scatter_data_json,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        type: 'category',
+                        labels: originLabels
+                    }],
+                    yAxes: [{
+                        type: 'category',
+                        labels: destinationLabels
+                    }]
+                }
+            }
+        });
+    </script>
+</body>
+</html>

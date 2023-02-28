@@ -4,47 +4,45 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .chart-container {
-      width: 50vw; /* Ancho de la mitad de la pantalla */
-      height: 50vh; /* Altura de la mitad de la pantalla */
+      width: 50vw; /* 50vw Ancho de la mitad de la pantalla */
+      height: 900px; /* 90vh Altura de la mitad de la pantalla */
     }
   </style>
 </head>
 <body>
 
-  <div>
+  <div class="chart-container">
     <canvas id="originDestinationChart"></canvas>
   </div>
 
   <script>
-    var ctx = document.getElementById('originDestinationChart').getContext('2d');
     var chart_theData = {{ the_data|safe }};
     var chartLabels = {{ the_labels|safe }};
-    var chart_data = {
-        "labels": chartLabels,
-        "datasets": [
-            {
-                "label": "Frequency",
-                "data": chart_theData,
-                "backgroundColor": "#5e72e4",
-                "borderColor": "#5e72e4",
-                "borderWidth": 1
-            }
-        ]
-    }
-    var chartOptions = {
-        scales: {
-            xAxes: [{
-                ticks: {
-                    beginAtZero:true,
-                    stepSize: 1
-                }
-            }]
-        }
-    };
+    var ctx = document.getElementById('originDestinationChart').getContext('2d');
     var myChart = new Chart(ctx, {
-        type: 'horizontalBar',
-        data: chartData,
-        options: chartOptions
+      type: 'bar',
+      data: {
+        axis: 'y',
+        labels: chartLabels,
+        datasets: [{
+          label: "Frequency",
+          data: chart_theData,
+          backgroundColor: "#5e72e4",
+          borderColor: "#5e72e4",
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        scales: {
+          xAxes: [{
+            ticks: {
+              beginAtZero:true,
+              stepSize: 1
+            }
+          }]
+        }
+      }
     });
   </script>
 

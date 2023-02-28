@@ -11,6 +11,27 @@ import requests
 from django.template import loader
 from collections import Counter
 
+def pie_chart(request):
+    return render(request, 'pie_chart.html', )
+
+def doughnut_chart(request):
+    return render(request, 'doughnut_chart.html', )
+
+
+def origin_destination_scatter(request):
+    data = doftDB.objects.all()
+
+    # Generar una lista de objetos para representar cada punto en la gráfica de dispersión
+    scatter_data = []
+    for item in data:
+        scatter_data.append({'x': item.origins, 'y': item.destinations})
+    # Pasar la lista de objetos como un objeto JSON
+    scatter_data_json = json.dumps(scatter_data)
+    print(scatter_data_json)
+
+    return render(request, 'scatter_chart.html', {'scatter_data_json': scatter_data_json})
+
+
 def origin_destination_chart(request):
     origins = doftDB.objects.order_by().values_list('origins', flat=True).distinct()
     destinations = doftDB.objects.order_by().values_list('destinations', flat=True).distinct()
@@ -29,11 +50,28 @@ def origin_destination_chart(request):
     for origin, destination in sorted(frequency, key=frequency.get, reverse=True):
         the_labels.append(f"{origin} - {destination}")
         the_data.append(frequency[(origin, destination)])
-    
     return render(request, "chartss.html", {'the_labels': the_labels, 'the_data': the_data})
 
 
 def my_view(request):
+    origins = doftDB.objects.order_by().values_list('origins', flat=True).distinct()
+    destinations = doftDB.objects.order_by().values_list('destinations', flat=True).distinct()
+    
+    frequency = {}
+    
+    for origin in origins:
+        for destination in destinations:
+            count = doftDB.objects.filter(origins=origin, destinations=destination).count()
+            if count > 0:
+                frequency[(origin, destination)] = count
+    
+    the_labels = []
+    the_data = []
+    
+    for origin, destination in sorted(frequency, key=frequency.get, reverse=True):
+        the_labels.append(f"{origin} - {destination}")
+        the_data.append(frequency[(origin, destination)])
+
     pickups_data = doftDB.objects.all().values_list('pickups', flat=True)
     pickups_counts = dict(Counter(pickups_data))
     pickups_list = list(pickups_counts.keys())
@@ -85,7 +123,7 @@ def my_view(request):
     weights_labels = list(weights_dict.keys())
     weights_data = list(weights_dict.values())
 
-    return render(request, 'bar_chart.html', {'pickups_list': pickups_list, 'pickups_counts_list': pickups_counts_list, 'states_orign_list': states_orign_list, 'states_orign_counts_list': states_orign_counts_list,'origins_list': origins_list, 'origins_counts_list': origins_counts_list,'states_dest_list': states_dest_list, 'states_dest_counts_list': states_dest_counts_list,'destinations_list': destinations_list, 'destinations_counts_list': destinations_counts_list, 'distances_data': distances_data,'truck_types_list': truck_types_list, 'truck_types_counts_list': truck_types_counts_list,'weights_labels': weights_labels, 'weights_data': weights_data,})
+    return render(request, 'bar_chart.html', {'pickups_list': pickups_list, 'pickups_counts_list': pickups_counts_list, 'states_orign_list': states_orign_list, 'states_orign_counts_list': states_orign_counts_list,'origins_list': origins_list, 'origins_counts_list': origins_counts_list,'states_dest_list': states_dest_list, 'states_dest_counts_list': states_dest_counts_list,'destinations_list': destinations_list, 'destinations_counts_list': destinations_counts_list, 'distances_data': distances_data,'truck_types_list': truck_types_list, 'truck_types_counts_list': truck_types_counts_list,'weights_labels': weights_labels, 'weights_data': weights_data,'the_labels': the_labels, 'the_data': the_data,})
 
 def load_data(request):
     la_data = doftDB.objects.all().values()

@@ -27,6 +27,9 @@ urlpatterns = [
     path('getUsersByNames', views.getUsersByNames, name = 'consultar usurio por nombres'),
     path('updateUsers', views.updateUsers, name = 'actualizar un usuario'),
     path('deleteUsers', views.deleteUsers, name = 'eliminar un usuario'),
-    path('bar-chart', views.my_view, name='load data en bar-chart'),
+    path('bar_chart', views.my_view, name='load data en bar-chart'),
     path('od_chart', views.origin_destination_chart, name='load data en bar-chart'),#views.my_view
+    path('scatter_chart', views.origin_destination_scatter, name='dispersion-charts'),
+    path('pie_chart', views.pie_chart , name = 'pie charts'),
+    path('doughnut_chart', views.doughnut_chart , name = 'doughnut charts')
 ]

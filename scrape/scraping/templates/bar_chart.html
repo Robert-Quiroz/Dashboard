@@ -50,6 +50,36 @@
     </div>
 
     <script>
+        var chart_theData = {{ the_data|safe }};
+        var chartLabels = {{ the_labels|safe }};
+        var ctx = document.getElementById('originDestinationChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            axis: 'y',
+            labels: chartLabels,
+            datasets: [{
+              label: "Frequencia de pares origen v.s. destino",
+              data: chart_theData,
+              backgroundColor: "#5e72e4",
+              borderColor: "#5e72e4",
+              borderWidth: 1
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            scales: {
+              xAxes: [{
+                ticks: {
+                  beginAtZero:true,
+                  stepSize: 1
+                }
+              }]
+            }
+          }
+        });
+    </script>
+    <script>
         var pickups_list = {{ pickups_list|safe }};
         var pickups_counts_list = {{ pickups_counts_list|safe }};
         var ctx = document.getElementById('pickups_chart').getContext('2d');
